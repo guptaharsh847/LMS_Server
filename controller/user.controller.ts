@@ -13,7 +13,11 @@ import {
   sendToken,
 } from "../utils/jwt";
 import { redis } from "../utils/redis";
-import { getUserById } from "../services/user.service";
+import {
+  getAllUsersService,
+  getUserById,
+  updateUserRoleService,
+} from "../services/user.service";
 import cloudinary from "cloudinary";
 
 //register user
@@ -335,7 +339,7 @@ export const updatePassword = CatchAsyncError(
 );
 
 //UPDATE profile picture
-interface IUpdateProfilePicture{
+interface IUpdateProfilePicture {
   avatar: string;
 }
 export const updateProfilePicture = CatchAsyncError(
@@ -343,33 +347,79 @@ export const updateProfilePicture = CatchAsyncError(
     try {
       const { avatar } = req.body as IUpdateProfilePicture;
       const user = await userModel.findById(req.user?._id);
-     
-      if(avatar && user){
-         if (user?.avatar?.public_id) {
-        await cloudinary.v2.uploader.destroy(user?.avatar?.public_id)
-        const mycloud=await cloudinary.v2.uploader.upload(avatar,{
-          folder:"avatars",
-          width:150,}
-          ) 
-          user.avatar={
+
+      if (avatar && user) {
+        if (user?.avatar?.public_id) {
+          await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
+          const mycloud = await cloudinary.v2.uploader.upload(avatar, {
+            folder: "avatars",
+            width: 150,
+          });
+          user.avatar = {
             public_id: mycloud.public_id,
-            url:mycloud.secure_url,
+            url: mycloud.secure_url,
           };
-      }else{
-        const mycloud=await cloudinary.v2.uploader.upload(avatar,{
-        folder:"avatars",
-        width:150,}
-        ) 
-        user.avatar={
-          public_id: mycloud.public_id,
-          url:mycloud.secure_url,
-        };
-        }}
+        } else {
+          const mycloud = await cloudinary.v2.uploader.upload(avatar, {
+            folder: "avatars",
+            width: 150,
+          });
+          user.avatar = {
+            public_id: mycloud.public_id,
+            url: mycloud.secure_url,
+          };
+        }
+      }
       await user?.save();
       await redis.set(req.user?._id, JSON.stringify(user));
       res.status(201).json({
         success: true,
         user,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+//get all users---only for admin
+export const getAllUsers = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      getAllUsersService(res);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+//update user role---admin
+export const updateUserRole = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id, role } = req.body;
+      updateUserRoleService(id, role, res);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+//delete user--only admin
+
+export const deleteUser = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const user = await userModel.findById(id);
+      if (!user) {
+        return next(new ErrorHandler("User not found", 400));
+      }
+      await user.deleteOne({ id });
+      await redis.del(id);
+      res.status(201).json({
+        success: true,
+        message: "User deleted successfully",
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));

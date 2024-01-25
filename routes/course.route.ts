@@ -1,9 +1,10 @@
 import { authorizeRoles, isAuthenticated } from "../middleware/auth";
 import {
-    addAnswer,
-    addQuestion,
+  addAnswer,
+  addQuestion,
   addReview,
   addReviewReply,
+  deleteCourse,
   editCourse,
   getAllCourses,
   getCourseByUser,
@@ -22,7 +23,7 @@ courseRouter.post(
 courseRouter.put(
   "/edit-course/:id",
   isAuthenticated as any,
-  authorizeRoles("user"),
+  authorizeRoles("admin"),
   editCourse as any
 );
 courseRouter.get("/get-course/:id", getSingleCourse as any);
@@ -32,26 +33,26 @@ courseRouter.get(
   isAuthenticated as any,
   getCourseByUser as any
 );
-courseRouter.put(
-  "/add-question",
-  isAuthenticated as any,
-  addQuestion as any
-);
-courseRouter.put(
-  "/add-answer",
-  isAuthenticated as any,
-  addAnswer as any
-);
-courseRouter.put(
-  "/add-review/:id",
-  isAuthenticated as any,
-  addReview as any
-);
+courseRouter.put("/add-question", isAuthenticated as any, addQuestion as any);
+courseRouter.put("/add-answer", isAuthenticated as any, addAnswer as any);
+courseRouter.put("/add-review/:id", isAuthenticated as any, addReview as any);
 courseRouter.put(
   "/add-review-reply",
   isAuthenticated as any,
   authorizeRoles("admin"),
   addReviewReply as any
+);
+courseRouter.get(
+  "/get-courses",
+  isAuthenticated as any,
+  authorizeRoles("admin"),
+  getAllCourses as any
+);
+courseRouter.delete(
+  "/delete-course/:id",
+  isAuthenticated as any,
+  authorizeRoles("admin"),
+  deleteCourse as any
 );
 
 export default courseRouter;

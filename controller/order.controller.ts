@@ -1,14 +1,15 @@
 import { Request, NextFunction, Response, response } from "express";
 import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 import ErrorHandler from "../utils/ErrorHandler";
-import OrderModel,{IOrder} from "../models/order.Model";
+import OrderModel,{IOrder} from "../models/order.model";
 import userModel from "../models/user.model";
 import courseModel from "../models/course.model";
 import path from "path";
 import ejs from "ejs";
 import sendMail from "../utils/sendMail";
-import NotificationModel from "../models/notification.Model";
+import NotificationModel from "../models/notification.model";
 import { newOrder } from "../services/order.service";
+import { getAllCoursesService } from "../services/course.service";
 
 //create order
 export const createOrder = CatchAsyncError(
@@ -64,11 +65,7 @@ try {
 
             success: true,
             order:course,});
-           
-
-
-
-            
+          
         await course?.save();
         course.purchased ? course.purchased +=1 :course.purchased;
 
@@ -79,4 +76,13 @@ try {
 
       catch (error:any) {
         return next(new ErrorHandler(error.message, 500));      }
-      })
+      });
+
+
+      //get all orders--admin only
+      export const getAllOrders =async (req: Request, res: Response, next: NextFunction) => {
+        try {
+          getAllCoursesService(res);
+          } catch (error:any) {
+            return next(new ErrorHandler(error.message, 500));          }
+      }
