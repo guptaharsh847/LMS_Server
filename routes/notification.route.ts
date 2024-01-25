@@ -6,11 +6,11 @@ import express from "express";
 const notificationRouter = express.Router();
 
 notificationRouter.get("/get-notification", isAuthenticated as any,
-authorizeRoles("user") as any,
+authorizeRoles("admin") as any,
 getNotifications as any ) //testing pending time 6:55
 
 notificationRouter.put("/update-notification/:id", isAuthenticated as any,
-authorizeRoles("user") as any,
+authorizeRoles("admin") as any,
 updateNotification as any ) //testing pending time 7:00
 
 
