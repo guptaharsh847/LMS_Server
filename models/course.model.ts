@@ -39,6 +39,7 @@ interface ICourseData extends Document{
     estimatedPrice?: number;
     thumbnail: object;
     tags: string;
+    categories: string,
     level: string;
     demoUrl: string;
     benefits: {title: string}[];
@@ -116,10 +117,15 @@ interface ICourseData extends Document{
         type: String,
         required: true,
         },
+        categories:{
+            type: String,
+            required: true,
+        },
         level:{
         type: String,
         required: true,
         },
+        
         demoUrl:{
         type: String,
         required: true,

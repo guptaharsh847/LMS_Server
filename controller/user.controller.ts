@@ -45,6 +45,8 @@ export const registrationUser = CatchAsyncError(
       const activationToken = createActivationToken(user);
       const activationCode = activationToken.activationCode;
       const data = { user: { name: user.name }, activationCode };
+      console.log(activationCode);
+      
       const html = await ejs.renderFile(
         path.join(__dirname, "../mails/acivation-mail.ejs"),
         data
@@ -211,7 +213,9 @@ export const updateAccessToken = CatchAsyncError(
       req.user = user;
       res.cookie("access_token", accessToken, accessTokenOptions as any);
       res.cookie("refresh_token", refreshToken, refreshTokenOptions as any);
-next();
+
+      await redis.set(user._id, JSON.stringify(user),"EX",604880);
+      return next();
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
@@ -270,12 +274,11 @@ export const updateUserInfo = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { name } = req.body as IUpdateUserInfo;
-  
+
       const userId = req.user?._id;
 
       const user = await userModel.findById(userId);
 
-      
       if (name && user) {
         user.name = name;
         console.log(user.name);
@@ -387,8 +390,17 @@ export const getAllUsers = CatchAsyncError(
 export const updateUserRole = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { id, role } = req.body;
-      updateUserRoleService(id, role, res);
+      const { email, role } = req.body;
+      const isUserExist = await userModel.findOne({ email });
+      if (isUserExist) {
+        const id=isUserExist._id;
+        updateUserRoleService(id, role, res);
+      } else {
+        res.status(400).json({
+          success: false,
+          message: "User Not found",
+        });
+      }
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }

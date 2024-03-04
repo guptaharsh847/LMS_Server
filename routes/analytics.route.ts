@@ -6,21 +6,21 @@ import express from "express";
 const analyticsRouter = express.Router();
 
 analyticsRouter.get(
-    "/get-users-analytics",updateAccessToken as any,
+    "/get-users-analytics",
     isAuthenticated as any,
     authorizeRoles("admin"),
     getUserAnalytics as any
 
 )
 analyticsRouter.get(
-    "/get-courses-analytics",updateAccessToken as any,
+    "/get-courses-analytics",
     isAuthenticated as any,
     authorizeRoles("admin"),
     getCourseAnalytics as any
 
 )
 analyticsRouter.get(
-    "/get-orders-analytics",updateAccessToken as any,
+    "/get-orders-analytics",
     isAuthenticated as any,
     authorizeRoles("admin"),
     getOrderAnalytics as any
