@@ -103,7 +103,7 @@ interface ICourseData extends Document{
         
         thumbnail: {
         public_id: {
-        // required: true,
+        required: true,
         type: String,
         
         },
