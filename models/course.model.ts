@@ -57,7 +57,7 @@ interface ICourseData extends Document{
         default: 0,},
         comment:String,
         commentReplies:[Object]
-        });
+        },{timestamps:true});
         
         const linkSchema= new Schema<ILink>({
         title: String,
@@ -69,7 +69,7 @@ interface ICourseData extends Document{
         question:String,
         questionReplies: [Object],
         
-        });
+        },{timestamps:true});
         
         const courseDataSchema= new Schema<ICourseData>({
         videoUrl: String,
