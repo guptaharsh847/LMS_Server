@@ -378,12 +378,13 @@ export const addReviewReply = CatchAsyncError(
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      if (!review.commentReplies) {
-        review.commentReplies = [];
-      }
+      // if (!review.commentReplies) {
+      //   review.commentReplies = [];
+      // }
       review.commentReplies?.push(replyData);
 
       await course?.save();
+      await redis.set(courseId, JSON.stringify(course), "EX", 604800); //7 days
       //create notification
       res.status(200).json({
         success: true,
