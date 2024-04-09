@@ -3,7 +3,7 @@ import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 import ErrorHandler from "../utils/ErrorHandler";
 import OrderModel, { IOrder } from "../models/order.model";
 import userModel from "../models/user.model";
-import courseModel from "../models/course.model";
+import courseModel, { ICourse } from "../models/course.model";
 import path from "path";
 import ejs from "ejs";
 import sendMail from "../utils/sendMail";
@@ -37,7 +37,7 @@ export const createOrder = CatchAsyncError(
           new ErrorHandler("You have already purchased this course", 400)
         );
       }
-      const course = await courseModel.findById(courseId);
+      const course:ICourse | null = await courseModel.findById(courseId);
       if (!course) {
         return next(new ErrorHandler("Course not found", 404));
       }
@@ -85,7 +85,7 @@ export const createOrder = CatchAsyncError(
         title: "Order Placed",
         message: `You have successfully purchased ${course?.name}`,
       });
-      course.purchased ? (course.purchased += 1) : course.purchased;
+     course.purchased =course.purchased + 1;
       res.status(201).json({
         success: true,
         order: course,

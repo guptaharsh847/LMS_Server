@@ -6,7 +6,7 @@ import { redis } from "../utils/redis";
 
 export const getUserById = async (id: string, res: Response) => {
   const userJson = await redis.get(id);
-  console.log(userJson);
+  // console.log(userJson);
 
   if (userJson) {
     const user = JSON.parse(userJson);

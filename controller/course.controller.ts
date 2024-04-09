@@ -304,7 +304,7 @@ export const addReview = CatchAsyncError(
     try {
       const userCourseList = req.user?.courses;
       const courseId = req.params.id;
-      console.log(userCourseList);
+      // console.log(userCourseList);
 
       //check if course already exist in userCourseList based on id
       const courseExists = userCourseList?.find(
