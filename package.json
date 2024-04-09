@@ -2,11 +2,19 @@
   "name": "server",
   "version": "1.0.0",
   "description": "It is Online Learning Management Portal",
-  "main": "server.js",
+  "main": "build/server.js",
+  "type":"commonjs",
+  "engines": {
+    "node": "18.x"
+  },
+
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx ts-node-dev --respawn --transpile-only server.ts"
-  },
+    "dev": "npx ts-node-dev --respawn --transpile-only server.ts",
+    "start": "node build/server.js",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false",
+    "build": "tsc"
+    },
   "author": "Harsh Gupta",
   "license": "ISC",
   "dependencies": {
